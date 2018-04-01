@@ -4,9 +4,9 @@ import sys
 from datetime import datetime
 import json
 
-def get_entries():
+def get_entries(filename):
   entries = []
-  with open(sys.argv[1], 'rb') as csvfile:
+  with open(filename, 'rb') as csvfile:
     spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
     for row in spamreader:
         if (row[0] == "Date"):
@@ -81,7 +81,9 @@ def add_taxable_sale(entry, entries, amounts, sales):
     return add_taxable_sale(entry, entries, amounts, sales)
 
 def main():
-  entries = get_entries()
+  if (len(sys.argv) < 2):
+    raise ValueError('Filename needs to be passed')
+  entries = get_entries(sys.argv[1])
   amounts = get_currency_amounts(entries)
   taxable_entries = get_taxable_entries(entries)
   taxable_sales = get_taxable_sales(taxable_entries, amounts)
