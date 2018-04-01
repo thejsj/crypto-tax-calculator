@@ -1,0 +1,4 @@
+Date,From,To,Exchange,Amount (From),Amount (To),Price (From/To),Price (From/USD),Fees (BTC),Fees (USD),Subtotal,Notes,Taxable,Profit,Capital Gains,Amount of BTC,Amount of ETH,Amount of LTC,Amount of XRP,Amount of US Spent
+5/9/2017,USD,LTC,Coinbase,1500.00,51.77,28.97,,,22.35,,,FALSE,,,0.00,41.43,51.77,0.00,5000.00
+6/11/2017,USD,LTC,Coinbase,2462.75,74.39,32.62,,,36.16,41.43,,FALSE,,,0.00,59.99,126.16,0.00,11205.82
+6/12/2017,LTC,USD,Coinbase,94.97,2659.77,28.43,,,40.23,,,TRUE,-397.92,-131.32,0.00,59.99,31.19,0.00,8546.05
