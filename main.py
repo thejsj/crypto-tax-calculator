@@ -1,11 +1,12 @@
 import csv
 import pprint
+import sys
 from datetime import datetime
 import json
 
 def get_entries():
   entries = []
-  with open('transactions-ltc.csv', 'rb') as csvfile:
+  with open(sys.argv[1], 'rb') as csvfile:
     spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
     for row in spamreader:
         if (row[0] == "Date"):
@@ -48,8 +49,6 @@ def get_taxable_sales(taxable_entries, amounts):
     return sales
 
 def add_taxable_sale(entry, entries, amounts, sales):
-    print "Entry"
-    pprint.pprint(entry)
     if (entry == None and len(entries) == 0):
         return sales
     # Find the last amount + calculate price diff
@@ -62,11 +61,9 @@ def add_taxable_sale(entry, entries, amounts, sales):
         }
     # If amount is the same as entry
     if last_amount['amount'] == entry['amount_from'] or last_amount['amount'] < entry['amount_from']:
-        print "Case 1"
         amounts[entry['currency_from']].pop()
         new_sale['amount'] = last_amount['amount']
     else:
-        print "Case 2"
         amounts[entry['currency_from']][-1]['amount'] -= entry['amount_from']
         new_sale['amount'] = entry['amount_from']
     new_sale['gain'] = new_sale['amount'] * (new_sale['sell_price'] - new_sale['buy_price'])
@@ -86,9 +83,7 @@ def add_taxable_sale(entry, entries, amounts, sales):
 def main():
   entries = get_entries()
   amounts = get_currency_amounts(entries)
-  pprint.pprint(amounts)
   taxable_entries = get_taxable_entries(entries)
-  pprint.pprint(taxable_entries)
   taxable_sales = get_taxable_sales(taxable_entries, amounts)
   pprint.pprint(taxable_sales)
 
