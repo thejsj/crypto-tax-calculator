@@ -1,7 +1,3 @@
-# Crypto Tax Calculator
-
-```
-$ python main.py transactions-ltc.csv
 [{'amount': 74.39,
   'buy_price': 32.62,
   'currency': 'LTC',
@@ -14,20 +10,3 @@ $ python main.py transactions-ltc.csv
   'date': datetime.datetime(2017, 6, 12, 0, 0),
   'gain': -11.113199999999981,
   'sell_price': 28.43}]
-```
-
-### CSV Format
-
-```
-date: String(%m/%d/%Y)
-currency_from: Float
-currency_to: Float
-amount_from: Float
-amount_to: Float
-```
-
-## Testing
-
-```
-python -m unittest discover .
-```

@@ -3,26 +3,29 @@ import pprint
 import sys
 from datetime import datetime
 import json
+import argparse
+import functools
 
-def get_entries(filename):
-  entries = []
-  with open(filename, 'rb') as csvfile:
-    spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
-    for row in spamreader:
-        if (row[0] == "Date"):
-            continue
-        entries.append({
-            'date': datetime.strptime(row[0], '%m/%d/%Y'),
-            'currency_from': row[1],
-            'currency_to': row[2],
-            'amount_from': float(row[4] or 0),
-            'amount_to': float(row[5] or 0),
-            'price': float(row[6] or 0),
-            'price_usd': float(row[7] or 0),
-            'fees': float(row[8] or 0),
-            'fees_usd': float(row[9] or 0),
-            'taxable': row[12]
-        })
+def map_single_entry (entry, base_currency):
+  entry['date'] = datetime.strptime(entry['date'], '%m/%d/%Y')
+  entry['amount_from'] = float(entry['amount_from'] or 0)
+  entry['amount_to'] = float(entry['amount_to'] or 0)
+  entry['currency_to'] = entry['currency_to'].upper()
+  entry['currency_from'] = entry['currency_from'].upper()
+  if entry['currency_to'] == base_currency:
+    # We want to revert the order then there is no base currency
+    entry['price'] = entry['amount_to'] / entry['amount_from']
+  elif entry['currency_from'] == base_currency:
+    entry['price'] = entry['amount_from'] / entry['amount_to']
+  else:
+    raise Exception("NO PRICE FOR NON BASE CURRENCY")
+  return entry
+
+def get_entries(filename, base_currency):
+
+  file = open(filename, 'rb')
+  entries = list(csv.DictReader(file))
+  entries = map(functools.partial(map_single_entry, base_currency=base_currency), entries)
   entries.sort(key=lambda x: x['date'])
   return entries
 
@@ -40,13 +43,10 @@ def get_currency_amounts(entries):
         })
   return amounts
 
-def get_taxable_entries(entries):
-  return filter(lambda x : x['taxable'] == 'TRUE', entries)
-
-def get_taxable_sales(taxable_entries, amounts):
+def get_sales(taxable_entries, amounts):
     first_entry = taxable_entries.pop()
     sales = add_taxable_sale(first_entry, taxable_entries, amounts, [])
-    return sales
+    return sales[::-1] # Reverse list
 
 def add_taxable_sale(entry, entries, amounts, sales):
     if (entry == None and len(entries) == 0):
@@ -80,14 +80,24 @@ def add_taxable_sale(entry, entries, amounts, sales):
 
     return add_taxable_sale(entry, entries, amounts, sales)
 
-def main():
-  if (len(sys.argv) < 2):
-    raise ValueError('Filename needs to be passed')
-  entries = get_entries(sys.argv[1])
+def get_taxable_entries(entries, base_currency):
+  return filter(lambda x : x['currency_from'] != base_currency, entries)
+
+def analyze_taxable_sales (filename, base_currency="USD"):
+  entries = get_entries(filename, base_currency)
   amounts = get_currency_amounts(entries)
-  taxable_entries = get_taxable_entries(entries)
-  taxable_sales = get_taxable_sales(taxable_entries, amounts)
-  pprint.pprint(taxable_sales)
+  taxable_entries = get_taxable_entries(entries, base_currency)
+  return get_sales(taxable_entries, amounts)
+
+def main():
+  parser = argparse.ArgumentParser(description='Calculate gains from transactions')
+  parser.add_argument('--file',
+                   help='Filename for csv')
+  parser.add_argument('--base-currency', default="USD",
+                   help='Base currency (Default "USD")')
+  args = parser.parse_args()
+
+  pprint.pprint(analyze_taxable_sales(args.file, args.base_currency))
 
 if __name__== "__main__":
   main()
