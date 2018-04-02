@@ -62,7 +62,8 @@ def add_taxable_sale(entry, entries, amounts, sales):
     # Find the last amount + calculate price diff
     last_amount = amounts[entry['currency_from']][-1].copy() # LIFO
     new_sale = {
-        'date': entry['date'],
+        'sell_date': entry['date'],
+        'buy_date': last_amount['date'],
         'buy_price': last_amount['price'],
         'sell_price': entry['price'],
         'currency': entry['currency_from'],
@@ -104,9 +105,23 @@ def main():
                    help='Filename for csv')
   parser.add_argument('--base-currency', default="USD",
                    help='Base currency (Default "USD")')
+  parser.add_argument('--format', default="pprint",
+                   help='Output format (pprint, tabluate, csv)')
   args = parser.parse_args()
 
-  pprint.pprint(analyze_taxable_sales(args.file, args.base_currency))
+  sales = analyze_taxable_sales(args.file, args.base_currency)
+  if args.format == 'pprint':
+    pprint.pprint(sales)
+  elif args.format == 'tabulate':
+    from tabulate import tabulate
+    print tabulate(sales, tablefmt="plain", headers="keys")
+  elif args.format == 'csv':
+    keys = sales[0].keys()
+    dict_writer = csv.DictWriter(sys.stdout, keys)
+    dict_writer.writeheader()
+    dict_writer.writerows(sales)
+  else:
+    raise Exception("Unrecognized --format passed")
 
 if __name__== "__main__":
   main()

@@ -15,13 +15,15 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(result[0], {'amount': 10.0,
           'buy_price': 10.0,
           'currency': 'LTC',
-          'date': datetime(2017, 1, 3, 0, 0),
+          'buy_date': datetime(2017, 1, 1, 0, 0),
+          'sell_date': datetime(2017, 1, 3, 0, 0),
           'gain': 0.0,
           'sell_price': 10.0})
         self.assertEqual(result[1], {'amount': 10.0,
           'buy_price': 5.0,
           'currency': 'LTC',
-          'date': datetime(2017, 1, 3, 0, 0),
+          'buy_date': datetime(2017, 1, 2, 0, 0),
+          'sell_date': datetime(2017, 1, 3, 0, 0),
           'gain': 50.0,
           'sell_price': 10.0})
 
