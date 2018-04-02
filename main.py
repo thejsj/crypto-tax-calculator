@@ -18,7 +18,9 @@ def map_single_entry (entry, base_currency):
   elif entry['currency_from'] == base_currency:
     entry['price'] = entry['amount_from'] / entry['amount_to']
   else:
-    raise Exception("NO PRICE FOR NON BASE CURRENCY")
+    if not entry.has_key('price'):
+        raise Exception("NO PRICE FOR NON BASE CURRENCY")
+    entry['price'] = float(entry['price'])
   return entry
 
 def get_entries(filename, base_currency):

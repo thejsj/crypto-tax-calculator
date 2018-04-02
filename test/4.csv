@@ -1,0 +1,4 @@
+date,currency_from,currency_to,amount_from,amount_to,price
+1/1/2017,USD,LTC,100,10,
+1/2/2017,USD,LTC,50,10,
+1/3/2017,LTC,XBT,20,100,15
