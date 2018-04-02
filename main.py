@@ -8,10 +8,16 @@ import functools
 
 def map_single_entry (entry, base_currency):
   entry['date'] = datetime.strptime(entry['date'], '%m/%d/%Y')
-  entry['amount_from'] = float(entry['amount_from'] or 0)
-  entry['amount_to'] = float(entry['amount_to'] or 0)
+  entry['amount_from'] = float(entry['amount_from']) # Should throw error (Nothing in life is free)
+  entry['amount_to'] = float(entry['amount_to']) # Should be handled
   entry['currency_to'] = entry['currency_to'].upper()
   entry['currency_from'] = entry['currency_from'].upper()
+  if entry.has_key('basis'):
+    entry['basis'] = float(entry['basis'])
+  elif entry.has_key('fees'):
+    entry['basis'] = float(entry['fees'])
+  else:
+    entry['basis'] = 0.0
   if entry['currency_to'] == base_currency:
     # We want to revert the order then there is no base currency
     entry['price'] = entry['amount_to'] / entry['amount_from']
@@ -69,6 +75,7 @@ def add_taxable_sale(entry, entries, amounts, sales):
         amounts[entry['currency_from']][-1]['amount'] -= entry['amount_from']
         new_sale['amount'] = entry['amount_from']
     new_sale['gain'] = new_sale['amount'] * (new_sale['sell_price'] - new_sale['buy_price'])
+    new_sale['gain'] -= entry['basis']
 
     sales.append(new_sale)
 

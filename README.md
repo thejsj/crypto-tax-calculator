@@ -1,7 +1,7 @@
 # Crypto Tax Calculator
 
 ```
-$ python main.py transactions-ltc.csv
+$ python main.py --file transactions-ltc.csv --base-currency USD
 [{'amount': 74.39,
   'buy_price': 32.62,
   'currency': 'LTC',
@@ -24,6 +24,8 @@ currency_from: Float
 currency_to: Float
 amount_from: Float
 amount_to: Float
+price: Float (Only necessary txs not in base currency)
+basis/fees: Float (Optional. Denomenated in base currency)
 ```
 
 ## Testing
