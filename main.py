@@ -63,8 +63,8 @@ def add_taxable_sale(entry, entries, amounts, sales):
     last_amount = amounts[entry['currency_from']][-1].copy() # LIFO
     new_sale = {
         'sell_date': entry['date'],
-        'buy_date': last_amount['date'],
         'buy_price': last_amount['price'],
+        'buy_date': last_amount['date'],
         'sell_price': entry['price'],
         'currency': entry['currency_from'],
         }
@@ -75,8 +75,9 @@ def add_taxable_sale(entry, entries, amounts, sales):
     else:
         amounts[entry['currency_from']][-1]['amount'] -= entry['amount_from']
         new_sale['amount'] = entry['amount_from']
-    new_sale['gain'] = new_sale['amount'] * (new_sale['sell_price'] - new_sale['buy_price'])
-    new_sale['gain'] -= entry['basis']
+    new_sale['net_proceeds'] = (new_sale['amount'] * new_sale['sell_price']) - entry['basis']
+    new_sale['cost'] = new_sale['amount'] * new_sale['buy_price']
+    new_sale['gain'] = new_sale['net_proceeds'] - new_sale['cost']
 
     sales.append(new_sale)
 
@@ -106,13 +107,13 @@ def main():
   parser.add_argument('--base-currency', default="USD",
                    help='Base currency (Default "USD")')
   parser.add_argument('--format', default="pprint",
-                   help='Output format (pprint, tabluate, csv)')
+                   help='Output format (pprint, table, csv)')
   args = parser.parse_args()
 
   sales = analyze_taxable_sales(args.file, args.base_currency)
   if args.format == 'pprint':
     pprint.pprint(sales)
-  elif args.format == 'tabulate':
+  elif args.format == 'table':
     from tabulate import tabulate
     print tabulate(sales, tablefmt="plain", headers="keys")
   elif args.format == 'csv':
