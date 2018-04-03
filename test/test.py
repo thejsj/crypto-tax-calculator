@@ -64,5 +64,11 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(result[0]['sell_price'], 15.0)
         self.assertEqual(result[1]['gain'], 100.00)
 
+    def test_6(self):
+        result = main.analyze_taxable_sales('test/6.csv')
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0]['gain'], 0)
+        self.assertEqual(result[1]['gain'], 50.0)
+
 if __name__ == '__main__':
     unittest.main()
