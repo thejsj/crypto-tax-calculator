@@ -1,5 +1,5 @@
 date,currency_from,currency_to,amount_from,amount_to
-1/0/2017,USD,LTC,100,1
+1/0/2017,USD,LTC,1,1
 2/1/2017,USD,LTC,100,10
 2/2/2017,USD,LTC,50,10
 2/3/2017,LTC,USD,20,200
